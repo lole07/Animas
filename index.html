@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<!-- v218: cielo con estrellas y luna, luz cian al final del cauce, más elementos desenfocados. -->
+<!-- v217: en el río solo agua, orillas, personaje, Mohán y efectos de velocidad (todo lo demás se oculta). Más velocidad. -->
+<!-- v216: sensación de gran velocidad en el río (manchas desenfocadas, estelas, desenfoque periférico, FOV). Base: v215. -->
+<!-- v215: río del Mohán sin decoración (solo agua, orillas y el Mohán) + movimiento lateral de nado. Base: v214. -->
+<!-- v214: entorno lateral más veloz con velocidad de corriente conservada. Base: v213. -->
+<!-- EL CAMINO DE LAS ÁNIMAS v189: base v188 + Regreso a Casa detallado de v166 -->
+<html lang="es"><head>\n<!-- v84: ajuste conservador de respuesta de movimiento y dificultad de jefes; base v77 --><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<title>El Camino de las Ánimas</title>
+<link rel="stylesheet" href="css/legacy/001-base-global.css"><link rel="stylesheet" href="css/legacy/002-v26css.css"><style id="v26css"></style>
+<link rel="stylesheet" href="css/legacy/003-v75-cinematic-layout.css"><style id="v75-cinematic-layout"></style><link rel="stylesheet" href="css/legacy/004-adaptive-device-visual-profile.css"><style id="adaptive-device-visual-profile"></style>
+
+<link rel="stylesheet" href="css/legacy/005-cross-browser-compat.css"><style id="cross-browser-compat"></style>
+<script id="cross-browser-compat-js" src="js/motor/compatibilidad-de-navegadores.js"></script>
+
+
+
+
+<link rel="stylesheet" href="css/legacy/006-v143-retro-centered-menu.css"><style id="v143-retro-centered-menu"></style>
+
+<link rel="stylesheet" href="css/legacy/007-v144-main-menu-text-only-retro.css"><style id="v144-main-menu-text-only-retro"></style>
+
+
+<link rel="stylesheet" href="css/legacy/008-v145-main-menu-new-background.css"><style id="v145-main-menu-new-background"></style>
+
+</head><body>
+<!-- v210: efectos de velocidad del Mohán aislados; no modificar mapas/materiales compartidos entre niveles. -->
+
+<link rel="stylesheet" href="css/legacy/009-hide-legacy-menu-before-init.css"><style id="hide-legacy-menu-before-init"></style>
+<canvas id="cv"></canvas><div id="vig"></div><div id="scan"></div><div id="fl"></div><div id="red"></div><div id="blk"></div>
+<svg width="0" height="0" style="position:absolute"><filter id="bld"><feTurbulence type="fractalNoise" baseFrequency=".035" numOctaves="2" seed="3" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="7"/></filter></svg><div id="dead"><h2 id="dh"></h2></div>
+<div id="hud"><div>Miedo<div class="bar" id="fear"><i></i></div></div><div>Aceite<div class="bar" id="fuel"><i></i></div></div></div>
+<div id="msg"></div>
+<div id="ov"><div>
+<h1>EL CAMINO DE LAS ÁNIMAS</h1>
+<p>Cruza el camino de tierra hasta la capilla antes de que amanezca. No todo lo que ves a los lados es real. No todo lo real se ve.</p>
+<p class="s">W/S avanzar · A/D girar · ←/→ voltear la cabeza · Shift correr · F farol · E rezar</p><p class="s">Las animitas (altarcitos del camino) calman el miedo. Las luces malas, no.</p>
+<p class="s">Usa audífonos. Presta atención a los grillos.</p>
+<button id="go">Entrar al camino</button> <button id="tut">Cómo jugar</button>
+</div></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script id="mdata" src="js/sistemas-compartidos/recursos/modelos-de-personajes.js"></script>
+<script src="js/sistemas-compartidos/recursos/geometria-de-personajes.js"></script>
+<script id="prdata" src="js/sistemas-compartidos/recursos/modelo-del-protagonista.js"></script>
+<script id="mmdata" src="js/sistemas-compartidos/recursos/modelo-de-la-madre-monte.js"></script>
+<script id="mcdata" src="js/sistemas-compartidos/recursos/modelo-del-machete.js"></script>
+<!-- Runtime principal dividido en 12 partes. Mantener este orden secuencial: comparten estado global. -->
+<script src="js/motor/runtime/01-renderizado-y-escenario-base.js"></script>
+<script src="js/motor/runtime/02-modelos-y-personajes-base.js"></script>
+<script src="js/motor/runtime/03-audio-base-y-sonidos.js"></script>
+<script src="js/motor/runtime/04-estado-y-supervivencia.js"></script>
+<script src="js/motor/runtime/05-flujo-del-juego-y-niveles.js"></script>
+<script src="js/motor/runtime/06-camara-controles-y-opciones.js"></script>
+<script src="js/motor/runtime/07-combate-machete-y-vegetacion.js"></script>
+<script src="js/motor/runtime/08-historia-menus-y-hud.js"></script>
+<script src="js/motor/runtime/09-escenas-y-ambiente.js"></script>
+<script src="js/motor/runtime/10-jefes-y-encuentros.js"></script>
+<link rel="stylesheet" href="css/ui/60-portada-principal.css">
+<script src="js/sistemas-compartidos/recursos/datos-de-modelos-especiales.js"></script>
+<script src="js/motor/runtime/11-poderes-y-efectos-de-jefes.js"></script>
+<script src="js/motor/runtime/12-colisiones-y-cruces-de-luz.js"></script><link rel="stylesheet" href="css/legacy/010-v147-ov-hide.css"><style id="v147-ov-hide"></style>
+<script id="v147-pre" src="js/motor/optimizar-dibujo-inicial.js"></script>
+<script id="v23" src="js/sistemas-compartidos/audio/gestor-de-audio-y-recursos.js"></script>
+<script id="v25" src="js/sistemas-compartidos/interfaz/opciones-de-clima-y-destellos.js"></script>
+<script id="v26" src="js/sistemas-compartidos/interfaz/linterna-y-secuencia-de-muerte.js"></script>
+
+<script id="v27" src="js/sistemas-compartidos/audio/musica-ambiental-y-de-jefes.js"></script>
+
+<script id="v28" src="js/sistemas-compartidos/audio/reproduccion-aleatoria-de-voces.js"></script>
+
+<script id="v29" src="js/sistemas-compartidos/audio/ambientes-sonoros-continuos.js"></script>
+
+<script id="v30" src="js/sistemas-compartidos/audio/sonidos-especificos-por-nivel.js"></script>
+<script id="v31" src="js/sistemas-compartidos/interfaz/hud-y-disposicion-tactil.js"></script>
+<script id="v32" src="js/sistemas-compartidos/personajes/efectos-de-cadejos.js"></script>
+<script id="v33" src="js/sistemas-compartidos/audio/director-de-rezos-de-luz.js"></script>
+<script id="v34" src="js/sistemas-compartidos/interfaz/creditos-y-vista-en-primera-persona.js"></script><script id="v37" src="js/sistemas-compartidos/interfaz/efectos-visuales-de-muerte.js"></script>
+<script id="videos-config" src="js/sistemas-compartidos/cinematicas/configuracion-de-videos.js"></script>
+<script id="v38" src="js/sistemas-compartidos/cinematicas/reproductor-de-videos.js"></script>
+
+<script id="v41" src="js/sistemas-compartidos/personajes/apariciones-y-subjefes-por-nivel.js"></script>
+<script id="v42" src="js/sistemas-compartidos/personajes/acecho-de-jefes-principales.js"></script>
+<script id="v44" src="js/sistemas-compartidos/audio/listas-y-rotacion-de-rezos.js"></script>
+<script id="v45" src="js/sistemas-compartidos/audio/filtros-de-voces-y-psicofonias.js"></script><script id="v46" src="js/sistemas-compartidos/jugabilidad/combate-y-efectos-del-machete.js"></script>
+
+<script id="v47" src="js/sistemas-compartidos/personajes/latido-y-preparacion-de-animaciones.js"></script>
+
+
+<script id="v49" src="js/sistemas-compartidos/mundo/generador-de-arboles-y-vegetacion.js"></script>
+<script id="loader-unico" src="js/motor/cargador-de-recursos.js"></script>
+
+<script id="v52" src="js/sistemas-compartidos/personajes/animacion-y-pasos-del-protagonista.js"></script>
+<script id="v53" src="js/sistemas-compartidos/mundo/generador-de-casas-y-arquitectura.js"></script>
+<script id="v54" src="js/sistemas-compartidos/jugabilidad/combos-y-remates-del-machete.js"></script>
+<script id="v60_boss_mobility" src="js/sistemas-compartidos/personajes/movilidad-de-jefes.js"></script>
+
+<script id="v46-llorona-audio-director" src="js/sistemas-compartidos/audio/director-de-audio-de-la-llorona.js"></script>
+
+<script id="v63_terror_psicologico" src="js/sistemas-compartidos/mundo/anomalias-de-terror-ambiental.js"></script>
+
+
+<link rel="stylesheet" href="css/legacy/011-v64-tutorial-style.css"><style id="v64-tutorial-style"></style>
+<script id="v64-graphic-tutorial" src="js/sistemas-compartidos/interfaz/tutorial-grafico-de-controles.js"></script>
+
+<script id="wolfdata" src="js/sistemas-compartidos/recursos/modelo-del-cadejo.js"></script>
+<script id="wolfpatch" src="js/sistemas-compartidos/personajes/modelos-y-animacion-de-cadejos.js"></script>
+<link rel="stylesheet" href="css/legacy/012-v69-cinematic-style.css"><style id="v69-cinematic-style"></style>
+<script id="v69-gameplay-enhancements" src="js/sistemas-compartidos/jugabilidad/ajustes-de-cadejos-y-mensajes.js"></script>
+
+<link rel="stylesheet" href="css/legacy/013-v70-environment-style.css"><style id="v70-environment-style"></style>
+<script id="v70-environmental-events" src="js/sistemas-compartidos/mecanicas-de-niveles/eventos-ambientales-por-capitulo.js"></script>
+
+
+<link rel="stylesheet" href="css/legacy/014-v72-cinematic-pixel-detail.css"><style id="v72-cinematic-pixel-detail"></style>
+<script id="v72-cinematic-detail" src="js/sistemas-compartidos/cinematicas/mejoras-visuales-de-cinematicas.js"></script>
+
+
+<link rel="stylesheet" href="css/legacy/015-v74-cinematic-scenes.css"><style id="v74-cinematic-scenes"></style>
+<link rel="stylesheet" href="css/legacy/016-v112-cinematic-pan.css"><style id="v112-cinematic-pan"></style>
+<script id="v77-cinematic-scenes-js" src="js/sistemas-compartidos/cinematicas/escenas-e-imagenes-narrativas.js"></script>
+
+<link rel="stylesheet" href="css/legacy/017-v76-cinematic-postproduction.css"><style id="v76-cinematic-postproduction"></style>
+
+
+
+
+
+<!-- v94 unificación: corrección de brazos de jefes conservada desde v93 -->
+<script id="v85-arms" src="js/sistemas-compartidos/personajes/rig-y-ajuste-de-brazos-de-jefes.js"></script>
+<script id="v86-anim" src="js/sistemas-compartidos/personajes/animaciones-del-protagonista.js"></script>
+<script id="v88-lore-transition-fix" src="js/sistemas-compartidos/narrativa/textos-y-transiciones-de-historia.js"></script>
+
+
+
+<script src="js/sistemas-compartidos/interfaz/mejoras-tactiles-de-cinematicas.js"></script>
+<script id="v95-mobile-and-level7-fix" src="js/niveles/nivel-07/cinematicas/transicion-al-rostro-del-monte.js"></script>
+
+
+
+<script id="v98-mobile-ergonomic-layout" src="js/sistemas-compartidos/interfaz/ergonomia-de-controles-moviles.js"></script>
+
+
+<link rel="stylesheet" href="css/legacy/018-v100-mobile-action-cross.css"><style id="v100-mobile-action-cross"></style>
+
+<link rel="stylesheet" href="css/legacy/019-v100-ui-mobile-exact-reference.css"><style id="v100-ui-mobile-exact-reference"></style>
+<script id="v100-ui-mobile-exact-reference-js" src="js/sistemas-compartidos/interfaz/orden-de-botones-moviles.js"></script>
+
+<link rel="stylesheet" href="css/legacy/020-v100-clean-hud.css"><style id="v100-clean-hud"></style>
+<script id="v100-clean-hud-js" src="js/sistemas-compartidos/interfaz/objetivo-y-mensajes-del-hud.js"></script>
+
+<script id="terrainpatch" src="js/sistemas-compartidos/mecanicas-de-niveles/barro-arena-y-charcos.js"></script>
+
+<script id="cinematic-assets-preserved" src="js/sistemas-compartidos/recursos/imagenes-cinematicas-parte-1.js"></script>
+<script id="v103" src="js/sistemas-compartidos/mecanicas-de-niveles/hierba-alta-y-lianas-compartidas.js"></script>
+\n<!-- v111: se retira el segundo deformador de superficies (v105), que deformaba mallas ya tratadas por v103. -->
+
+
+
+<script id="v111-terreno-madre-monte-nuevo" src="js/niveles/nivel-03/escenario/relieve-de-la-montana.js"></script>
+
+<link rel="stylesheet" href="css/legacy/021-v120-intro-frames.css"><style id="v120-intro-frames"></style>
+<script id="v126-ojo-arbustos" src="js/niveles/nivel-05/personajes/ojo-del-angel.js"></script>
+<script id="v123" src="js/sistemas-compartidos/mundo/iluminacion-y-detalle-de-objetos.js"></script>
+<script id="v124" src="js/sistemas-compartidos/mundo/cielo-y-nubes-nocturnas.js"></script>
+<link rel="stylesheet" href="css/legacy/022-v125-intro-frames.css"><style id="v125-intro-frames"></style>
+<script id="v127" src="js/sistemas-compartidos/mecanicas-de-niveles/hierba-transitable-y-sistema-de-cadejos.js"></script>
+
+<script id="v129-reparado" src="js/sistemas-compartidos/mecanicas-de-niveles/mecanicas-de-cementerio-e-iglesia.js"></script>
+
+<script id="v130-escuela-hierba" src="js/niveles/nivel-05/jugabilidad/escondites-y-hierba.js"></script>
+
+<script id="v131-patasola-caida-jugador" src="js/sistemas-compartidos/personajes/reaccion-de-caida-de-la-patasola.js"></script>
+<script id="v132-pantano" src="js/niveles/nivel-03/escenario/pantano-y-terreno.js"></script>
+
+<script id="v133-boss-fluid-reactions" src="js/sistemas-compartidos/personajes/reacciones-fluidas-de-jefes.js"></script>
+
+<script id="v142-level-intros-and-loader-gradient" src="js/sistemas-compartidos/cinematicas/introducciones-de-niveles.js"></script>
+<script id="v155" src="js/sistemas-compartidos/recursos/imagenes-cinematicas-parte-2.js"></script>
+<script id="v157_madremonte_forest" src="js/niveles/nivel-03/escenario/bosque-de-la-madre-monte.js"></script>
+
+<script id="v158_madremonte_cura_signature" src="js/niveles/nivel-03/personajes/acecho-del-cura.js"></script>
+
+
+<script src="js/sistemas-compartidos/interfaz/opciones-y-controles-reasignables.js"></script>
+<script id="v163-audio-calmo" src="js/sistemas-compartidos/audio/rezos-y-ambiente-calmo.js"></script>
+
+<script id="v164-tutorial" src="js/sistemas-compartidos/interfaz/tutorial-jugable.js"></script>
+
+<script id="v166-entornos" src="js/sistemas-compartidos/mecanicas-de-niveles/escenarios-de-montana-cementerio-e-iglesia.js"></script>
+
+<link rel="stylesheet" href="css/legacy/023-cdla-unified-menu-style.css"><style id="cdla-unified-menu-style"></style>
+<script src="js/sistemas-compartidos/interfaz/menu-y-opciones.js"></script>
+
+
+<link rel="stylesheet" href="css/legacy/024-cdla-v178-scroll-finish.css"><style id="cdla-v178-scroll-finish"></style>
+
+
+<!-- v180: punto único de entrada al panel categorizado de opciones. -->
+
+
+<!-- v181: inicio/tutorial esperan a que termine el cargador; menú de opciones preservado -->
+
+<!-- v182: sincronización de arranque real; no confundir la precarga con el inicio de partida -->
+<script id="v182-startup-sync" src="js/motor/sincronizacion-de-inicio-y-tutorial.js"></script>
+<script id="v183-pasos-bajos" src="js/sistemas-compartidos/jugabilidad/obstaculos-para-agacharse.js"></script>
+
+
+<!-- ===== EL RÍO DEL MOHÁN: nivel + cinemáticas (portado de v251) ===== -->
+<script id="v192-rio-mohan" src="js/niveles/nivel-rio-mohan/entrada-y-configuracion-del-rio.js"></script>
+<script id="v200-rio-corriente" src="js/niveles/nivel-rio-mohan/corriente-y-recorrido.js"></script>
+
+
+<script id="v202-mohan-clear-channel" src="js/niveles/nivel-rio-mohan/limpieza-del-canal.js"></script>
+
+
+<script id="v207-mohan-endless-river" src="js/niveles/nivel-rio-mohan/recorrido-continuo.js"></script>
+
+
+<script id="v212-mohan-procedural-environment" src="js/niveles/nivel-rio-mohan/entorno-procedural.js"></script>
+
+<script id="v210-mohan-speed-sensation-isolated" src="js/niveles/nivel-rio-mohan/sensacion-de-velocidad.js"></script>
+
+<script id="v215-mohan-swim-motion" src="js/niveles/nivel-rio-mohan/animacion-de-nado.js"></script>
+
+<script id="v216-mohan-speed-blur" src="js/niveles/nivel-rio-mohan/desenfoque-de-velocidad.js"></script>
+
+<script id="v217-mohan-only-river" src="js/niveles/nivel-rio-mohan/escena-del-rio-sin-elementos-extra.js"></script>
+
+<script id="v218-mohan-sky" src="js/niveles/nivel-rio-mohan/cielo-del-rio.js"></script>
+
+<!-- v219: nivel del Mohán · V = brazada lateral rápida (nado) · C (mantener) = sumergirse bajo el agua, con aire limitado. Solo actúa con RIVER_CHAPTER.active; el resto de niveles no cambia. -->
+<script id="v219-mohan-nado-buceo" src="js/niveles/nivel-rio-mohan/nado-y-buceo.js"></script>
+
+
+<!-- v221 (sobre v220): nivel del Mohán · nado rápido frontal (W/Shift mantenido, Espacio = impulso) + sistema de obstáculos dinámico (troncos, piedras, ramas bajas, remolinos). Solo con RIVER_CHAPTER.active. -->
+<script id="v221-mohan-obstaculos" src="js/niveles/nivel-rio-mohan/obstaculos-del-rio.js"></script>
+
+
+<script id="v229-mohan-first-person-lock" src="js/niveles/nivel-rio-mohan/camara-en-primera-persona.js"></script>
+
+
+
+<!-- v230: Mohán acechador visible en el río. Modelo provisional sustituible, aviso de ataque y esquiva legible. -->
+<script id="v230-mohan-stalker" src="js/niveles/nivel-rio-mohan/acechador-del-rio.js"></script>
+
+<!-- v232: corrección focal del avance del río y legibilidad del Mohán acechador -->
+<script id="v232-mohan-advance-visibility" src="js/niveles/nivel-rio-mohan/visibilidad-del-recorrido.js"></script>
+
+
+
+<!-- v236: el trayecto del río conserva su progreso ante reinicios heredados del juego base. -->
+<script id="v236-mohan-progress-persistence" src="js/niveles/nivel-rio-mohan/guardado-del-progreso.js"></script>
+
+
+
+<!-- v237: recorrido continuo del Mohán. Durante el trayecto, los resets generales y saltos de posición no pueden devolver al jugador al inicio ni detener el progreso. -->
+<script id="v237-mohan-continuous-course" src="js/niveles/nivel-rio-mohan/continuidad-del-recorrido.js"></script>
+
+
+
+<!-- v239: nombre del nivel y animación de nado; conserva la lógica estable del trayecto v237. -->
+<script id="v239-rio-nombre-y-nado" src="js/niveles/nivel-rio-mohan/nombre-y-estado-de-nado.js"></script>
+
+
+
+<!-- v240: línea de agua a la altura de los hombros, bruma y vegetación de ribera; solo durante EL RÍO. -->
+<script id="v240-rio-agua-hombros-bruma-follaje" src="js/niveles/nivel-rio-mohan/agua-bruma-y-follaje.js"></script>
+
+
+
+
+<script id="v243-rio-avance-y-props-hacia-jugador" src="js/niveles/nivel-rio-mohan/avance-y-objetos-del-rio.js"></script>
+
+<!-- v246: obstaculos del rio con decoracion procedural detallada; basado en v243; sin plantilla de combate de Madre Monte. -->
+<!-- v247: título rojo correcto EL RÍO (no LA MONTAÑA) y oleadas menos abrumadoras, con huecos más amplios y aceleración final gradual. -->
+<!-- v248: título del río solo al entrar; sin colisiones sumergido; geometría más suave en rocas, hojas y ramas. -->
+
+<!-- v250: título EL RÍO al empezar el tramo jugable (nunca al llegar al jefe) y postura de nado estable. -->
+<script id="v250-rio-titulo-y-postura-estables" src="js/niveles/nivel-rio-mohan/titulo-y-postura-estables.js"></script>
+
+
+
+<!-- v251: pose de nado continua en reposo y esquiva; solo EL RÍO. -->
+<script id="v251-rio-pose-nado-continua" src="js/niveles/nivel-rio-mohan/pose-de-nado-continua.js"></script>
+
+<link rel="stylesheet" href="css/legacy/025-mm-bottomleft.css"><style id="mm-bottomleft"></style>
+
+<!-- Estilos aislados por nivel: edita solo el archivo del capítulo que quieras cambiar. -->
+<link rel="stylesheet" href="js/niveles/nivel-01/estilos.css">
+<link rel="stylesheet" href="js/niveles/nivel-02/estilos.css">
+<link rel="stylesheet" href="js/niveles/nivel-03/estilos.css">
+<link rel="stylesheet" href="js/niveles/nivel-04/estilos.css">
+<link rel="stylesheet" href="js/niveles/nivel-05/estilos.css">
+<link rel="stylesheet" href="js/niveles/nivel-06/estilos.css">
+<link rel="stylesheet" href="js/niveles/nivel-07/estilos.css">
+<link rel="stylesheet" href="js/niveles/nivel-rio-mohan/estilos.css">
+
+<!-- Motores independientes de niveles: cargar después del motor común y de sus parches. -->
+<script src="js/niveles/nivel-01/nivel.js"></script>
+<script src="js/niveles/nivel-02/nivel.js"></script>
+<script src="js/niveles/nivel-03/nivel.js"></script>
+<script src="js/niveles/nivel-04/nivel.js"></script>
+<script src="js/niveles/nivel-05/nivel.js"></script>
+<script src="js/niveles/nivel-06/nivel.js"></script>
+<script src="js/niveles/nivel-07/nivel.js"></script>
+<script src="js/niveles/nivel-rio-mohan/nivel.js"></script>
+<script src="js/motor/gestor-de-niveles.js"></script>
+
+<!-- ==========================================================
+     SISTEMA VISUAL CENTRAL (cargar al final para evitar que
+     los estilos heredados vuelvan a pisar los diseños nuevos).
+     Edita css/ui/ y css/niveles/, no los archivos legacy.
+     ========================================================== -->
+<link rel="stylesheet" href="css/ui/00-design-tokens.css">
+<link rel="stylesheet" href="css/ui/10-base-ui.css">
+<link rel="stylesheet" href="css/ui/20-main-menu.css">
+<link rel="stylesheet" href="css/ui/30-level-selector.css">
+<link rel="stylesheet" href="css/ui/40-options-and-dialogues.css">
+<link rel="stylesheet" href="css/ui/50-hud-and-text.css">
+<link rel="stylesheet" href="css/ui/90-responsive.css">
+<script src="js/sistemas-compartidos/interfaz/controlador-de-estilos.js"></script>
+</body></html>

@@ -1,0 +1,36 @@
+PARA EDITAR EL JUEGO
+
+SI VAS A MODIFICAR UN SOLO CAPÍTULO:
+Abre js/niveles/nivel-XX/
+Cada carpeta tiene LEEME.txt, MANIFIESTO.json, nivel.js y estilos.css.
+
+CAPÍTULOS:
+01 El Camino:       js/niveles/nivel-01/
+02 La Llorona:      js/niveles/nivel-02/
+03 Madre Monte:     js/niveles/nivel-03/
+04 Cementerio:      js/niveles/nivel-04/
+05 Escuela:         js/niveles/nivel-05/
+06 Iglesia:         js/niveles/nivel-06/
+07 Rostro del Monte:js/niveles/nivel-07/
+Río del Mohán:      js/niveles/nivel-rio-mohan/
+
+PARA ENTREGAR UN NIVEL A UNA IA O PROGRAMADOR:
+Ejecuta: python herramientas/preparar-nivel.py 03
+Cambia 03 por el número del capítulo. Para el río usa rio-mohan.
+El ZIP aparece en entregas/ e incluye el nivel y sus dependencias.
+
+SI EL CAMBIO AFECTA A VARIOS NIVELES:
+Busca en js/sistemas-compartidos/ y elige la categoría adecuada.
+
+MOTOR COMÚN:
+js/motor/
+Mapa del runtime principal: js/motor/MAPA-DEL-RUNTIME.md
+
+ESTILOS GENERALES DE MENÚS Y HUD:
+css/ui/
+
+IMPORTANTE:
+- No cambies el orden de los scripts en index.html.
+- No agregues async o defer sin revisar dependencias.
+- No conviertas los scripts a type=module sin una refactorización completa.
+- Prueba el juego después de cada cambio.

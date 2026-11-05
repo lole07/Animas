@@ -1,0 +1,63 @@
+{
+  "architecture": "motor comun + sistemas compartidos por responsabilidad + paquetes de nivel autocontenidos en estructura",
+  "levels": 7,
+  "special_chapters": [
+    "rio-mohan"
+  ],
+  "shared_services": [
+    "renderizado",
+    "camara",
+    "fisica base",
+    "colisiones comunes",
+    "entrada",
+    "audio"
+  ],
+  "level_motors_status": "Cada nivel tiene un archivo nivel.js que registra su ciclo de vida. No todos contienen una mecánica propia; el runtime y los sistemas compartidos siguen prestando los servicios comunes.",
+  "js_reorganization": "Motor, sistemas compartidos y contenido exclusivo por nivel están separados en carpetas explícitas. Los scripts mantienen su orden de ejecución.",
+  "consolidations": [
+    "transicion-y-recuperacion-del-nivel-7.js",
+    "menu-y-opciones.js",
+    "apariciones-y-subjefes-por-nivel.js",
+    "una sola corrección de brazos del rig",
+    "una sola función deathTick"
+  ],
+  "preserved": "Las mecánicas y módulos específicos se conservaron; no se eliminaron sistemas por compartir tema.",
+  "level_folders": [
+    "nivel-01",
+    "nivel-02",
+    "nivel-03",
+    "nivel-04",
+    "nivel-05",
+    "nivel-06",
+    "nivel-07",
+    "nivel-rio-mohan"
+  ],
+  "shared_systems_root": "js/sistemas-compartidos/",
+  "engine_root": "js/motor/",
+  "level_entrypoint": "nivel.js",
+  "level_styles": "estilos.css dentro de cada carpeta de nivel",
+  "level_delivery": "python herramientas/preparar-nivel.py 03",
+  "main_runtime_status": "El runtime original fue dividido sin cambiar su contenido en 12 módulos temáticos dentro de js/motor/runtime/. Se cargan secuencialmente desde index.html. Comparten variables globales y requieren una fase posterior de desacoplamiento por API explícita.",
+  "load_order": "js/orden-de-carga.json se genera a partir de los scripts reales de index.html.",
+  "runtime_modules": [
+    "01-renderizado-y-escenario-base.js",
+    "02-modelos-y-personajes-base.js",
+    "03-audio-base-y-sonidos.js",
+    "04-estado-y-supervivencia.js",
+    "05-flujo-del-juego-y-niveles.js",
+    "06-camara-controles-y-opciones.js",
+    "07-combate-machete-y-vegetacion.js",
+    "08-historia-menus-y-hud.js",
+    "09-escenas-y-ambiente.js",
+    "10-jefes-y-encuentros.js",
+    "11-poderes-y-efectos-de-jefes.js",
+    "12-colisiones-y-cruces-de-luz.js"
+  ],
+  "runtime_split_validation": "La secuencia de lógica de los 12 módulos se conservó sin reescribir funciones. Se extrajeron declaraciones de datos de modelos a recursos y una hoja de estilos con su imagen a CSS/assets.",
+  "extracted_assets": [
+    "SOMB: datos codificados de modelo especial de jefe",
+    "SOMBH: datos codificados de geometría de jefe",
+    "ANG64: datos codificados de modelo 3D de jefe",
+    "Portada: CSS e imagen extraídos del runtime a css/ui/60-portada-principal.css y assets/portada-principal.jpg"
+  ]
+}
